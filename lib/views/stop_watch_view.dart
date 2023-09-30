@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
 import 'package:flutter/material.dart';
 
 import '../exports_all.dart';
@@ -14,6 +13,7 @@ class StopWatchView extends StatefulWidget {
 class _StopWatchViewState extends State<StopWatchView> {
   late Timer timer;
   Duration duration = Duration.zero;
+  List<Duration> lapDurationList = [];
 
   void startTimer(Duration? continueDuration) {
     timer = Timer.periodic(const Duration(seconds: 1), (Timer timer) {
@@ -53,64 +53,137 @@ class _StopWatchViewState extends State<StopWatchView> {
     }
   }
 
+  void lapTimer(Duration duration) {
+    setState(() {
+      lapDurationList.add(duration);
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        // Row(
-        //   mainAxisAlignment: MainAxisAlignment.center,
-        //   children: [
-        //     TimeCardWidget(digits: getHMS(HMSFlag: 0)),
-        //     const SizedBox(
-        //       width: 30,
-        //     ),
-        //     TimeCardWidget(digits: getHMS(HMSFlag: 1)),
-        //     const SizedBox(
-        //       width: 30,
-        //     ),
-        //     TimeCardWidget(digits: getHMS(HMSFlag: 2)),
-        //   ],
-        // ),
-        TimeCardWidget(
-          digits:
-              '${getHMS(HMSFlag: 0)}:${getHMS(HMSFlag: 1)}:${getHMS(HMSFlag: 2)}',
-          millisec: duration.inMilliseconds.toString(),
-        ),
-        const SizedBox(
-          height: 20,
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            ElevatedButton(
-                onPressed: () {
-                  stopTimer(true);
-                },
-                child: const Icon(Icons.stop)),
-            const SizedBox(
-              width: 20,
-            ),
-            ElevatedButton(
-                onPressed: () {
-                  stopTimer(false);
-                },
-                child: const Icon(Icons.pause)),
-            const SizedBox(
-              width: 20,
-            ),
-            ElevatedButton(
-                onPressed: () {
-                  if (duration.compareTo(Duration.zero) == 0) {
-                    startTimer(null);
-                  } else {
-                    startTimer(duration);
-                  }
-                },
-                child: const Icon(Icons.play_arrow))
-          ],
-        )
-      ],
+    return Padding(
+      padding: const EdgeInsets.only(top: 80.0),
+      child: Column(
+        // mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          // Row(
+          //   mainAxisAlignment: MainAxisAlignment.center,
+          //   children: [
+          //     TimeCardWidget(digits: getHMS(HMSFlag: 0)),
+          //     const SizedBox(
+          //       width: 30,
+          //     ),
+          //     TimeCardWidget(digits: getHMS(HMSFlag: 1)),
+          //     const SizedBox(
+          //       width: 30,
+          //     ),
+          //     TimeCardWidget(digits: getHMS(HMSFlag: 2)),
+          //   ],
+          // ),
+          TimeCardWidget(
+            digits:
+                '${getHMS(HMSFlag: 0)}:${getHMS(HMSFlag: 1)}:${getHMS(HMSFlag: 2)}',
+            millisec: duration.inMilliseconds.toString(),
+          ),
+          const SizedBox(
+            height: 20,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton(
+                  onPressed: () {
+                    stopTimer(true);
+                  },
+                  child: const Icon(Icons.stop)),
+              const SizedBox(
+                width: 20,
+              ),
+              ElevatedButton(
+                  onPressed: () {
+                    stopTimer(false);
+                  },
+                  child: const Icon(Icons.pause)),
+              const SizedBox(
+                width: 20,
+              ),
+              ElevatedButton(
+                  onPressed: () {
+                    if (duration.compareTo(Duration.zero) == 0) {
+                      startTimer(null);
+                    } else {
+                      startTimer(duration);
+                    }
+                  },
+                  child: const Icon(Icons.play_arrow)),
+              const SizedBox(
+                width: 20,
+              ),
+              ElevatedButton(
+                  onPressed: () {
+                    lapTimer(duration);
+                  },
+                  child: const Icon(Icons.punch_clock)),
+            ],
+          ),
+          Expanded(
+            child: ListView.separated(
+                itemCount: 4, //timerDurationList.length,
+                separatorBuilder: (context, index) => const SizedBox(
+                      height: 20.0,
+                    ),
+                shrinkWrap: true,
+                padding: const EdgeInsets.symmetric(
+                    horizontal: 30.0, vertical: 30.0),
+                itemBuilder: (context, index) => Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10.0),
+                          boxShadow: [
+                            BoxShadow(
+                                color: Colors.grey.shade300,
+                                spreadRadius: 1.0,
+                                blurRadius: 0,
+                                offset: const Offset(1.0, 1.0)),
+                            BoxShadow(
+                                color: Colors.grey.shade400,
+                                spreadRadius: 1.0,
+                                blurRadius: 0,
+                                offset: const Offset(1.0, 1.0)),
+                            const BoxShadow(
+                                color: Colors.white,
+                                spreadRadius: 3.0,
+                                blurRadius: 1,
+                                offset: Offset(-3.0, -3.0)),
+                            const BoxShadow(
+                                color: Colors.white,
+                                spreadRadius: 3.0,
+                                blurRadius: 1,
+                                offset: Offset(-3.0, -3.0))
+                          ]),
+                      child:  Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            '${index +1}',
+                            style: const TextStyle(
+                                fontFamily: 'Montserrat',
+                                fontSize: 20.0,
+                                fontWeight: FontWeight.w400),
+                          ),
+                          Text(
+                            '${getHMS(HMSFlag: 0)}:${getHMS(HMSFlag: 1)}:${getHMS(HMSFlag: 2)}',
+                            style: const TextStyle(
+                                fontFamily: 'Montserrat',
+                                fontSize: 20.0,
+                                fontWeight: FontWeight.w300),
+                          ),
+                        ],
+                      ),
+                    )),
+          ),
+        ],
+      ),
     );
   }
 }

@@ -11,23 +11,33 @@ class ClockView extends StatelessWidget {
       child: Center(
         child: Container(
             decoration: BoxDecoration(
-                color: Colors.grey[300],
-                borderRadius: BorderRadius.circular(300),
-                boxShadow: const [
+                borderRadius: BorderRadius.circular(
+                  MediaQuery.of(context).size.height * 0.5,
+                ),
+                color: Colors.grey.shade50,
+                shape: BoxShape.rectangle,
+                boxShadow: [
                   BoxShadow(
-                    color: Color(0xFFBEBEBE),
-                    offset: Offset(10, 10),
-                    blurRadius: 30,
-                    spreadRadius: 1,
-                  ),
+                      color: Colors.grey.shade300,
+                      spreadRadius: 0.0,
+                      blurRadius: 10,
+                      offset: const Offset(3.0, 3.0)),
                   BoxShadow(
-                    color: Colors.white,
-                    offset: Offset(-10, -10),
-                    blurRadius: 30,
-                    spreadRadius: 1,
-                  ),
+                      color: Colors.grey.shade400,
+                      spreadRadius: 0.0,
+                      blurRadius: 10 / 2.0,
+                      offset: const Offset(3.0, 3.0)),
+                  const BoxShadow(
+                      color: Colors.white,
+                      spreadRadius: 2.0,
+                      blurRadius: 10,
+                      offset: Offset(-3.0, -3.0)),
+                  const BoxShadow(
+                      color: Colors.white,
+                      spreadRadius: 2.0,
+                      blurRadius: 10,
+                      offset: Offset(-3.0, -3.0)),
                 ]),
-            // padding: const EdgeInsets.all(10),
             child: const AnalogClock()),
       ),
     );
