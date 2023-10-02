@@ -11,9 +11,9 @@ class StopWatchView extends StatefulWidget {
 }
 
 class _StopWatchViewState extends State<StopWatchView> {
-  late Timer timer;
+  Timer? timer;
   Duration duration = Duration.zero;
-  List<Duration> lapDurationList = [];
+  List<Duration> lapDurationList = <Duration>[];
 
   void startTimer(Duration? continueDuration) {
     timer = Timer.periodic(const Duration(seconds: 1), (Timer timer) {
@@ -26,7 +26,9 @@ class _StopWatchViewState extends State<StopWatchView> {
   }
 
   void stopTimer(bool reset) {
-    timer.cancel();
+    setState(() {
+      timer!.cancel();
+    });
     if (reset) {
       resetTimer();
     }
@@ -35,21 +37,22 @@ class _StopWatchViewState extends State<StopWatchView> {
   void resetTimer() {
     setState(() {
       duration = Duration.zero;
+      lapDurationList = [];
     });
   }
 
   // ignore: non_constant_identifier_names
-  String getHMS({required int HMSFlag}) {
+  String getHMS({required int HMSFlag, required Duration localD}) {
     //0 For hour 1 for Mint 2 for Sec
-    if (duration.compareTo(Duration.zero) == 0) {
+    if (localD.compareTo(Duration.zero) == 0) {
       return '00';
     }
     if (HMSFlag == 0) {
-      return twoDigits(duration.inHours.remainder(60));
+      return twoDigits(localD.inHours.remainder(60));
     } else if (HMSFlag == 1) {
-      return twoDigits(duration.inMinutes.remainder(60));
+      return twoDigits(localD.inMinutes.remainder(60));
     } else {
-      return twoDigits(duration.inSeconds.remainder(60));
+      return twoDigits(localD.inSeconds.remainder(60));
     }
   }
 
@@ -64,7 +67,7 @@ class _StopWatchViewState extends State<StopWatchView> {
     return Padding(
       padding: const EdgeInsets.only(top: 80.0),
       child: Column(
-        // mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
         children: [
           // Row(
           //   mainAxisAlignment: MainAxisAlignment.center,
@@ -81,8 +84,8 @@ class _StopWatchViewState extends State<StopWatchView> {
           //   ],
           // ),
           TimeCardWidget(
-            digits:
-                '${getHMS(HMSFlag: 0)}:${getHMS(HMSFlag: 1)}:${getHMS(HMSFlag: 2)}',
+            digits: '${getHMS(HMSFlag: 0, localD: duration)}:'
+                '${getHMS(HMSFlag: 1, localD: duration)}:${getHMS(HMSFlag: 2, localD: duration)}',
             millisec: duration.inMilliseconds.toString(),
           ),
           const SizedBox(
@@ -92,47 +95,47 @@ class _StopWatchViewState extends State<StopWatchView> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               ElevatedButton(
-                  onPressed: () {
-                    stopTimer(true);
-                  },
-                  child: const Icon(Icons.stop)),
+                  onPressed: (duration.inMilliseconds == 0 || timer!.isActive)
+                      ? null
+                      : () {
+                          stopTimer(true);
+                        },
+                  child: const Icon(Icons.replay)),
               const SizedBox(
                 width: 20,
               ),
               ElevatedButton(
                   onPressed: () {
-                    stopTimer(false);
+                    (timer?.isActive ?? false)
+                        ? stopTimer(false)
+                        : duration.compareTo(Duration.zero) == 0
+                            ? startTimer(null)
+                            : startTimer(duration);
                   },
-                  child: const Icon(Icons.pause)),
+                  child: Icon((timer?.isActive ?? false)
+                      ? Icons.pause
+                      : Icons.play_arrow)),
               const SizedBox(
                 width: 20,
               ),
               ElevatedButton(
-                  onPressed: () {
-                    if (duration.compareTo(Duration.zero) == 0) {
-                      startTimer(null);
-                    } else {
-                      startTimer(duration);
-                    }
-                  },
-                  child: const Icon(Icons.play_arrow)),
-              const SizedBox(
-                width: 20,
-              ),
-              ElevatedButton(
-                  onPressed: () {
-                    lapTimer(duration);
-                  },
+                  onPressed: (duration.inMilliseconds == 0 || !timer!.isActive)
+                      ? null
+                      : () {
+                          lapTimer(duration);
+                        },
                   child: const Icon(Icons.punch_clock)),
             ],
           ),
           Expanded(
             child: ListView.separated(
-                itemCount: 4, //timerDurationList.length,
+                itemCount: lapDurationList.length,
                 separatorBuilder: (context, index) => const SizedBox(
                       height: 20.0,
                     ),
                 shrinkWrap: true,
+                // physics: const NeverScrollableScrollPhysics(),
+                // reverse: true,
                 padding: const EdgeInsets.symmetric(
                     horizontal: 30.0, vertical: 30.0),
                 itemBuilder: (context, index) => Container(
@@ -161,18 +164,32 @@ class _StopWatchViewState extends State<StopWatchView> {
                                 blurRadius: 1,
                                 offset: Offset(-3.0, -3.0))
                           ]),
-                      child:  Row(
+                      child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            '${index +1}',
+                            '${lapDurationList.length - index}',
                             style: const TextStyle(
                                 fontFamily: 'Montserrat',
                                 fontSize: 20.0,
                                 fontWeight: FontWeight.w400),
                           ),
                           Text(
-                            '${getHMS(HMSFlag: 0)}:${getHMS(HMSFlag: 1)}:${getHMS(HMSFlag: 2)}',
+                            '${getHMS(
+                              HMSFlag: 0,
+                              localD: lapDurationList[
+                                  (lapDurationList.length - index) - 1],
+                            )}'
+                            ':${getHMS(
+                              HMSFlag: 1,
+                              localD: lapDurationList[
+                                  (lapDurationList.length - index) - 1],
+                            )}'
+                            ':${getHMS(
+                              HMSFlag: 2,
+                              localD: lapDurationList[
+                                  (lapDurationList.length - index) - 1],
+                            )}',
                             style: const TextStyle(
                                 fontFamily: 'Montserrat',
                                 fontSize: 20.0,

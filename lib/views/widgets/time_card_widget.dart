@@ -11,8 +11,8 @@ class TimeCardWidget extends StatelessWidget {
       height: MediaQuery.of(context).size.width * 0.8,
       width: MediaQuery.of(context).size.width * 0.8,
       alignment: Alignment.center,
-      // color: Colors.black,
       decoration: BoxDecoration(
+          // color: Colors.black,
           borderRadius: BorderRadius.circular(
             MediaQuery.of(context).size.height * 0.5,
           ),
