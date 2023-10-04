@@ -8,8 +8,8 @@ class TimeCardWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: MediaQuery.of(context).size.width * 0.8,
-      width: MediaQuery.of(context).size.width * 0.8,
+      height: MediaQuery.of(context).size.width * 0.75,
+      width: MediaQuery.of(context).size.width * 0.75,
       alignment: Alignment.center,
       decoration: BoxDecoration(
           // color: Colors.black,

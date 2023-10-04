@@ -9,7 +9,7 @@ class CustomNeuroButton extends StatelessWidget {
     
     return Container(
       alignment: Alignment.center,
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
 
       ),
       child: content,

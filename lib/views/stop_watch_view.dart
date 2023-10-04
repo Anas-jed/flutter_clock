@@ -65,31 +65,122 @@ class _StopWatchViewState extends State<StopWatchView> {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(top: 80.0),
+      padding:
+          const EdgeInsets.only(top: 0, bottom: 20.0), // 80.0, bottom: 20.0),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          // Row(
-          //   mainAxisAlignment: MainAxisAlignment.center,
-          //   children: [
-          //     TimeCardWidget(digits: getHMS(HMSFlag: 0)),
-          //     const SizedBox(
-          //       width: 30,
-          //     ),
-          //     TimeCardWidget(digits: getHMS(HMSFlag: 1)),
-          //     const SizedBox(
-          //       width: 30,
-          //     ),
-          //     TimeCardWidget(digits: getHMS(HMSFlag: 2)),
-          //   ],
-          // ),
-          TimeCardWidget(
-            digits: '${getHMS(HMSFlag: 0, localD: duration)}:'
-                '${getHMS(HMSFlag: 1, localD: duration)}:${getHMS(HMSFlag: 2, localD: duration)}',
-            millisec: duration.inMilliseconds.toString(),
-          ),
-          const SizedBox(
-            height: 20,
+          Expanded(
+            child: CustomScrollView(
+              slivers: [
+                SliverAppBar(
+                  centerTitle: true,
+                  // snap: true,
+                  // floating: true,
+                  title: TimeCardWidget(
+                    digits: '${getHMS(HMSFlag: 0, localD: duration)}:'
+                        '${getHMS(HMSFlag: 1, localD: duration)}:${getHMS(HMSFlag: 2, localD: duration)}',
+                    millisec: duration.inMilliseconds.toString(),
+                  ),
+                  toolbarHeight: MediaQuery.of(context).size.height * 0.38,
+                ),
+                // const SliverAppBar(
+                //   centerTitle: true,
+                //   title: Text('Some Vlue'),
+                //   pinned: true,
+                //   surfaceTintColor: Colors.white,
+                //   elevation: 0.0,
+                //   primary: true,
+                // ),
+                SliverToBoxAdapter(
+                  child: ShaderMask(
+                    blendMode: BlendMode.dstOut,
+                    shaderCallback: (Rect bounds) {
+                      return LinearGradient(
+                          colors: <Color>[
+                            Colors.transparent,
+                            Colors.white.withOpacity(0.8)
+                          ],
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          stops: const [0.7, 1.0]).createShader(bounds);
+                    },
+                    child: ListView.separated(
+                        itemCount: lapDurationList.length,
+                        separatorBuilder: (context, index) => const SizedBox(
+                              height: 20.0,
+                            ),
+                        shrinkWrap: true,
+                        physics: const BouncingScrollPhysics(),
+                        // reverse: true,
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 30.0, vertical: 30.0),
+                        itemBuilder: (context, index) => Container(
+                              padding: const EdgeInsets.all(8),
+                              decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(10.0),
+                                  // color:
+                                  //     Theme.of(context).primaryColor.withOpacity(0.1),
+                                  boxShadow: [
+                                    BoxShadow(
+                                        color: Colors.grey.shade300,
+                                        spreadRadius: 1.0,
+                                        blurRadius: 0,
+                                        offset: const Offset(1.0, 1.0)),
+                                    BoxShadow(
+                                        color: Colors.grey.shade400,
+                                        spreadRadius: 1.0,
+                                        blurRadius: 0,
+                                        offset: const Offset(1.0, 1.0)),
+                                    const BoxShadow(
+                                        color: Colors.white,
+                                        spreadRadius: 3.0,
+                                        blurRadius: 1,
+                                        offset: Offset(-3.0, -3.0)),
+                                    const BoxShadow(
+                                        color: Colors.white,
+                                        spreadRadius: 3.0,
+                                        blurRadius: 1,
+                                        offset: Offset(-3.0, -3.0))
+                                  ]),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    '${lapDurationList.length - index}',
+                                    style: const TextStyle(
+                                        fontFamily: 'Montserrat',
+                                        fontSize: 20.0,
+                                        fontWeight: FontWeight.w400),
+                                  ),
+                                  Text(
+                                    '${getHMS(
+                                      HMSFlag: 0,
+                                      localD: lapDurationList[
+                                          (lapDurationList.length - index) - 1],
+                                    )}'
+                                    ':${getHMS(
+                                      HMSFlag: 1,
+                                      localD: lapDurationList[
+                                          (lapDurationList.length - index) - 1],
+                                    )}'
+                                    ':${getHMS(
+                                      HMSFlag: 2,
+                                      localD: lapDurationList[
+                                          (lapDurationList.length - index) - 1],
+                                    )}',
+                                    style: const TextStyle(
+                                        fontFamily: 'Montserrat',
+                                        fontSize: 20.0,
+                                        fontWeight: FontWeight.w300),
+                                  ),
+                                ],
+                              ),
+                            )),
+                  ),
+                ),
+              ],
+            ),
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -127,80 +218,20 @@ class _StopWatchViewState extends State<StopWatchView> {
                   child: const Icon(Icons.punch_clock)),
             ],
           ),
-          Expanded(
-            child: ListView.separated(
-                itemCount: lapDurationList.length,
-                separatorBuilder: (context, index) => const SizedBox(
-                      height: 20.0,
-                    ),
-                shrinkWrap: true,
-                // physics: const NeverScrollableScrollPhysics(),
-                // reverse: true,
-                padding: const EdgeInsets.symmetric(
-                    horizontal: 30.0, vertical: 30.0),
-                itemBuilder: (context, index) => Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(10.0),
-                          boxShadow: [
-                            BoxShadow(
-                                color: Colors.grey.shade300,
-                                spreadRadius: 1.0,
-                                blurRadius: 0,
-                                offset: const Offset(1.0, 1.0)),
-                            BoxShadow(
-                                color: Colors.grey.shade400,
-                                spreadRadius: 1.0,
-                                blurRadius: 0,
-                                offset: const Offset(1.0, 1.0)),
-                            const BoxShadow(
-                                color: Colors.white,
-                                spreadRadius: 3.0,
-                                blurRadius: 1,
-                                offset: Offset(-3.0, -3.0)),
-                            const BoxShadow(
-                                color: Colors.white,
-                                spreadRadius: 3.0,
-                                blurRadius: 1,
-                                offset: Offset(-3.0, -3.0))
-                          ]),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            '${lapDurationList.length - index}',
-                            style: const TextStyle(
-                                fontFamily: 'Montserrat',
-                                fontSize: 20.0,
-                                fontWeight: FontWeight.w400),
-                          ),
-                          Text(
-                            '${getHMS(
-                              HMSFlag: 0,
-                              localD: lapDurationList[
-                                  (lapDurationList.length - index) - 1],
-                            )}'
-                            ':${getHMS(
-                              HMSFlag: 1,
-                              localD: lapDurationList[
-                                  (lapDurationList.length - index) - 1],
-                            )}'
-                            ':${getHMS(
-                              HMSFlag: 2,
-                              localD: lapDurationList[
-                                  (lapDurationList.length - index) - 1],
-                            )}',
-                            style: const TextStyle(
-                                fontFamily: 'Montserrat',
-                                fontSize: 20.0,
-                                fontWeight: FontWeight.w300),
-                          ),
-                        ],
-                      ),
-                    )),
-          ),
         ],
       ),
     );
   }
+}
+
+class MyText extends StatelessWidget implements PreferredSizeWidget {
+  const MyText({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Text('Some Value');
+  }
+
+  @override
+  Size get preferredSize => const Size(double.infinity, 30);
 }
